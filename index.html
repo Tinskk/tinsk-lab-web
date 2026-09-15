@@ -311,14 +311,14 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 mt-8 pb-24">
         <div class="img-tint rounded-2xl overflow-hidden aspect-[4/5] card-floating relative ring-1 ring-white/10">
-          <video src="brand_assets/SUPPORT.mp4" autoplay muted loop playsinline preload="auto" aria-label="Customer support agent interface" class="w-full h-full object-cover"></video>
+          <video data-src="brand_assets/SUPPORT.mp4" muted loop playsinline preload="none" aria-label="Customer support agent interface" class="w-full h-full object-cover lazy-video"></video>
           <span class="absolute top-4 left-4 tag-chip bg-white/90">Live in production</span>
         </div>
         <div class="img-tint rounded-2xl overflow-hidden aspect-[4/5] card-floating relative ring-1 ring-white/10 sm:mt-8">
-          <video src="brand_assets/Real-Estate2.mp4" autoplay muted loop playsinline preload="auto" aria-label="Automated real estate workflow demo" class="w-full h-full object-cover"></video>
+          <video data-src="brand_assets/Real-Estate2.mp4" muted loop playsinline preload="none" aria-label="Automated real estate workflow demo" class="w-full h-full object-cover lazy-video"></video>
         </div>
         <div class="img-tint rounded-2xl overflow-hidden aspect-[4/5] card-floating relative ring-1 ring-white/10">
-          <video src="brand_assets/Customer support Vid.mp4" autoplay muted loop playsinline preload="auto" aria-label="Sales and customer support agent demo" class="w-full h-full object-cover"></video>
+          <video data-src="brand_assets/Customer support Vid.mp4" muted loop playsinline preload="none" aria-label="Sales and customer support agent demo" class="w-full h-full object-cover lazy-video"></video>
           <span class="absolute top-4 left-4 tag-chip bg-[var(--accent)] text-white border-none">Client favorite</span>
         </div>
       </div>
@@ -382,7 +382,7 @@
           <span class="text-[12px] uppercase tracking-wide text-[var(--ink-4)]">Support Agent</span>
         </div>
         <div class="img-tint rounded-xl overflow-hidden aspect-[4/3] relative">
-          <video src="brand_assets/AT2.mp4" autoplay muted loop playsinline preload="auto" aria-label="ATRADER AI support agent case study" class="w-full h-full object-cover"></video>
+          <video data-src="brand_assets/AT2.mp4" muted loop playsinline preload="none" aria-label="ATRADER AI support agent case study" class="w-full h-full object-cover lazy-video"></video>
           <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <a href="https://myatraderapp.com/" target="_blank" rel="noopener" class="btn-primary text-[13px] font-semibold uppercase tracking-wide px-6 py-3 rounded-full whitespace-nowrap">Visit site</a>
           </div>
@@ -399,7 +399,7 @@
           <span class="text-[12px] uppercase tracking-wide text-[var(--ink-4)]">Customer Care Agent</span>
         </div>
         <div class="img-tint rounded-xl overflow-hidden aspect-[4/3]">
-          <video src="brand_assets/Customer support Vid.mp4" autoplay muted loop playsinline preload="auto" aria-label="U Trade WhatsApp sales and customer support agent case study" class="w-full h-full object-cover"></video>
+          <video data-src="brand_assets/Customer support Vid.mp4" muted loop playsinline preload="none" aria-label="U Trade WhatsApp sales and customer support agent case study" class="w-full h-full object-cover lazy-video"></video>
         </div>
         <div class="flex items-center justify-between mt-3 text-[13px] text-[var(--ink-4)]">
           <span>WhatsApp Sales + Customer Support Agent</span>
@@ -413,7 +413,7 @@
           <span class="text-[12px] uppercase tracking-wide text-[var(--ink-4)]">Forecasting Agent</span>
         </div>
         <div class="img-tint rounded-xl overflow-hidden aspect-[4/3]">
-          <video src="brand_assets/Forecasting agent.mp4" autoplay muted loop playsinline preload="auto" aria-label="Forge Manufacturing inventory forecasting agent case study" class="w-full h-full object-cover"></video>
+          <video data-src="brand_assets/Forecasting agent.mp4" muted loop playsinline preload="none" aria-label="Forge Manufacturing inventory forecasting agent case study" class="w-full h-full object-cover lazy-video"></video>
         </div>
         <div class="flex items-center justify-between mt-3 text-[13px] text-[var(--ink-4)]">
           <span>Inventory &amp; demand forecasting</span>
@@ -442,7 +442,7 @@
         </summary>
         <div class="mt-6 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 md:gap-10">
           <div class="img-tint rounded-xl overflow-hidden aspect-[4/3]">
-            <video src="brand_assets/Coding.mp4" autoplay muted loop playsinline preload="auto" aria-label="AI agent development illustration" class="w-full h-full object-cover"></video>
+            <video data-src="brand_assets/Coding.mp4" muted loop playsinline preload="none" aria-label="AI agent development illustration" class="w-full h-full object-cover lazy-video"></video>
           </div>
           <div>
             <p class="text-[15px] leading-[1.7] text-[var(--ink-4)] max-w-[560px]">We design and build custom AI agents trained on your business (support, sales, operations, and back-office) to handle repetitive, high-volume work, integrated directly into the tools you already use.</p>
@@ -733,6 +733,28 @@
   document.querySelectorAll('#mobileMenu a').forEach((link) => {
     link.addEventListener('click', closeMobileMenu);
   });
+
+  const lazyVideos = document.querySelectorAll('video.lazy-video[data-src]');
+  if ('IntersectionObserver' in window) {
+    const videoObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const video = entry.target;
+        video.src = video.dataset.src;
+        video.removeAttribute('data-src');
+        video.load();
+        video.play().catch(() => {});
+        observer.unobserve(video);
+      });
+    }, { rootMargin: '200px' });
+    lazyVideos.forEach((video) => videoObserver.observe(video));
+  } else {
+    lazyVideos.forEach((video) => {
+      video.src = video.dataset.src;
+      video.removeAttribute('data-src');
+      video.autoplay = true;
+    });
+  }
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reduceMotion) {
