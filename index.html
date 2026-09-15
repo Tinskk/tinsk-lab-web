@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TINSK Labs - AI Agency</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#000000;
+    --ink-3:#030303;
+    --ink-4:#4f4f4f;
+    --paper:#ffffff;
+    --grey:#f5f5f5;
+    --border:rgba(3,3,3,0.14);
+    --accent:#3d31d8;
+    --accent-2:#5b6eff;
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Google Sans Flex','Inter',system-ui,-apple-system,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:-0.04em;
+    line-height:0.82;
+  }
+  .display-hero{ font-size:clamp(52px,13vw,180px); letter-spacing:-0.045em; }
+  .display-section{ font-size:clamp(38px,8vw,96px); letter-spacing:-0.035em; line-height:0.86; }
+  .display-card{ font-size:clamp(28px,4vw,44px); letter-spacing:-0.02em; line-height:0.95; }
+  .tag-chip{
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:6px 14px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:#fff;
+    transition:transform .35s cubic-bezier(.16,1,.3,1), background-color .35s ease;
+  }
+  .btn-primary:hover{ background:var(--accent); transform:translateY(-2px); }
+  .btn-primary:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  .btn-accent{
+    background:var(--accent);
+    color:#fff;
+    box-shadow:0 14px 30px -10px rgba(61,49,216,0.55);
+    transition:transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease;
+  }
+  .btn-accent:hover{ transform:translateY(-2px); box-shadow:0 18px 36px -8px rgba(61,49,216,0.65); }
+  .btn-accent:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
+  .card-surface{
+    background:#fff;
+    border:1px solid var(--border);
+    box-shadow:0 1px 2px rgba(3,3,3,0.04);
+    transition:transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s ease, border-color .4s ease;
+  }
+  .card-surface:hover{
+    transform:translateY(-6px);
+    border-color:rgba(3,3,3,0.28);
+    box-shadow:0 30px 50px -24px rgba(3,3,3,0.28), 0 10px 18px -12px rgba(61,49,216,0.18);
+  }
+  .card-floating{
+    box-shadow:0 40px 80px -30px rgba(3,3,3,0.35), 0 12px 24px -14px rgba(0,0,0,0.25);
+  }
+  .noise::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+    pointer-events:none;
+  }
+  .img-tint{ position:relative; overflow:hidden; border-radius:inherit; -webkit-mask-image:-webkit-radial-gradient(white, black); transform:translateZ(0); }
+  .img-tint img{ transition:transform .6s cubic-bezier(.16,1,.3,1); }
+  .img-tint:hover img{ transform:scale(1.045); }
+  .img-tint video{ display:block; width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+  .img-tint::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0) 55%);
+    mix-blend-mode:multiply;
+    pointer-events:none;
+  }
+  .accordion-row{ border-top:1px solid var(--border); }
+  .accordion-row:last-child{ border-bottom:1px solid var(--border); }
+  details > summary{ list-style:none; cursor:pointer; }
+  details > summary::-webkit-details-marker{ display:none; }
+  details[open] .chev{ transform:rotate(45deg); }
+  .chev{ transition:transform .3s cubic-bezier(.16,1,.3,1); }
+  a, button{ transition:color .25s ease, background-color .25s ease, border-color .25s ease; }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+  input, textarea, select{
+    border-bottom:1.5px solid var(--border);
+    background:transparent;
+  }
+  input:focus, textarea:focus, select:focus{ border-color:var(--ink); }
+  .logo-x{
+    display:inline-block; width:20px; height:20px; position:relative;
+  }
+  .logo-x::before, .logo-x::after{
+    content:""; position:absolute; left:50%; top:50%;
+    width:22px; height:7px; background:var(--accent); border-radius:4px;
+  }
+  .logo-x::before{ transform:translate(-50%,-50%) rotate(45deg); }
+  .logo-x::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+  .status-dot{
+    width:7px;height:7px;border-radius:999px;background:#22c55e;
+    box-shadow:0 0 0 3px rgba(34,197,94,0.18);
+  }
+  .marquee-track{ animation:marquee 28s linear infinite; }
+  @keyframes marquee{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+  ::selection{ background:var(--accent); color:#fff; }
+  /* ---- Mobile nav: animated hamburger + dropdown ---- */
+  .menu-btn{ position:relative; }
+  .menu-bar{
+    position:absolute; left:50%; top:50%; width:22px; height:2px; border-radius:2px;
+    background:#000; transform:translate(-50%,-50%) translateY(-4px);
+    transition:transform .45s cubic-bezier(.65,0,.35,1), opacity .25s ease, background-color .3s ease;
+  }
+  .menu-bar-2{ transform:translate(-50%,-50%) translateY(4px); }
+  .menu-btn.is-active .menu-bar-1{ transform:translate(-50%,-50%) rotate(45deg); background:var(--accent); }
+  .menu-btn.is-active .menu-bar-2{ transform:translate(-50%,-50%) rotate(-45deg); background:var(--accent); }
+
+  #mobileMenu{
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    max-height:0; opacity:0;
+    padding-top:0; padding-bottom:0;
+    transform:translateY(-10px) scale(0.98);
+    transform-origin:top center;
+    transition:max-height .55s cubic-bezier(.16,1,.3,1), opacity .35s ease, transform .5s cubic-bezier(.16,1,.3,1), padding .55s cubic-bezier(.16,1,.3,1);
+    pointer-events:none;
+  }
+  #mobileMenu.is-open{
+    max-height:420px; opacity:1; transform:translateY(0) scale(1);
+    padding-top:1rem; padding-bottom:1rem;
+    pointer-events:auto;
+    box-shadow:0 24px 40px -20px rgba(3,3,3,0.25);
+  }
+  #mobileMenu[hidden]{ display:none; }
+  #mobileMenu a{
+    position:relative;
+    opacity:0; transform:translateX(-14px);
+    transition:opacity .45s cubic-bezier(.16,1,.3,1), transform .45s cubic-bezier(.16,1,.3,1), color .25s ease;
+  }
+  #mobileMenu.is-open a{ opacity:1; transform:translateX(0); }
+  #mobileMenu.is-open a:nth-child(1){ transition-delay:.08s; }
+  #mobileMenu.is-open a:nth-child(2){ transition-delay:.14s; }
+  #mobileMenu.is-open a:nth-child(3){ transition-delay:.2s; }
+  #mobileMenu.is-open a:nth-child(4){ transition-delay:.26s; }
+  #mobileMenu a::after{
+    content:""; position:absolute; left:0; bottom:-2px; width:0; height:1.5px; background:var(--accent);
+    transition:width .3s cubic-bezier(.16,1,.3,1);
+  }
+  #mobileMenu a:hover{ color:var(--accent); }
+  #mobileMenu a:hover::after{ width:100%; }
+  @media (prefers-reduced-motion: reduce){
+    #mobileMenu, #mobileMenu a, .menu-bar{ transition:none !important; }
+  }
+
+  /* ---- Hero: video background ---- */
+  .hero-pin-wrap{ position:relative; }
+  .hero-shell{ position:sticky; top:0; overflow:hidden; background:#060b16; z-index:0; }
+  .hero-spacer{ height:14vh; min-height:90px; }
+  .hero-video{
+    position:absolute; inset:0; z-index:0;
+    width:100%; height:100%; object-fit:cover; object-position:center;
+    will-change:transform;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-video{ transform:none !important; }
+  }
+  .hero-vignette{
+    position:absolute; inset:0; z-index:1;
+    background:radial-gradient(ellipse at 50% 25%, transparent 0%, rgba(6,11,22,0.3) 55%, rgba(6,11,22,0.94) 100%);
+  }
+  .hero-grain{ position:absolute; inset:0; z-index:2; opacity:.5; }
+  .hero-grain::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+  }
+  .hero-content{ will-change:transform, opacity; }
+
+  @keyframes scrollArrowBounce{
+    0%, 100%{ transform:translateY(0); }
+    50%{ transform:translateY(5px); }
+  }
+  .scroll-arrow{ animation:scrollArrowBounce 1.6s ease-in-out infinite; }
+
+  /* ---- Scroll reveal ---- */
+  .reveal{
+    opacity:0; transform:translateY(28px);
+    transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  .reveal-stagger.is-visible > *{ opacity:1; transform:translateY(0); }
+  .reveal-stagger > *{
+    opacity:0; transform:translateY(24px);
+    transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal-stagger.is-visible > *:nth-child(1){ transition-delay:.02s; }
+  .reveal-stagger.is-visible > *:nth-child(2){ transition-delay:.08s; }
+  .reveal-stagger.is-visible > *:nth-child(3){ transition-delay:.14s; }
+  .reveal-stagger.is-visible > *:nth-child(4){ transition-delay:.2s; }
+  .reveal-stagger.is-visible > *:nth-child(5){ transition-delay:.26s; }
+  .reveal-stagger.is-visible > *:nth-child(6){ transition-delay:.32s; }
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .reveal-stagger > *{ opacity:1 !important; transform:none !important; transition:none !important; }
+  }
+
+  /* ---- Overlap slab: next section rises over the pinned hero ---- */
+  .overlap-slab{
+    position:relative; z-index:10;
+    border-radius:40px 40px 0 0;
+    box-shadow:0 -50px 90px -30px rgba(3,3,3,0.35);
+  }
+
+  /* ---- Rotating statement ---- */
+  .rotator{ position:relative; min-height:3.4em; }
+  .rotator-line{
+    position:absolute; inset:0;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+    pointer-events:none;
+  }
+  .rotator-line.is-active{
+    position:relative;
+    opacity:1; transform:translateY(0);
+    pointer-events:auto;
+  }
+  .rotator-count{ font-variant-numeric:tabular-nums; letter-spacing:0.05em; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-black/10">
+  <div class="max-w-[1320px] mx-auto px-5 md:px-8 h-[64px] flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-2 shrink-0">
+      <span class="logo-x"></span>
+      <span class="font-extrabold tracking-tight text-lg uppercase">TINSK<span class="text-[10px] align-top ml-0.5 font-semibold">™</span> Labs</span>
+    </a>
+    <div class="hidden md:flex items-center gap-2 text-[13px] text-[var(--ink-4)]">
+      <span class="status-dot"></span>
+      <span>Remote-first &middot; Working worldwide</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8 text-[14px] font-medium">
+      <a href="#work" class="hover:text-[var(--accent)]">Work</a>
+      <a href="#services" class="hover:text-[var(--accent)]">Services</a>
+      <a href="#about" class="hover:text-[var(--accent)]">About</a>
+      <a href="#contact" class="hover:text-[var(--accent)]">Contact</a>
+    </nav>
+    <a href="#contact" class="hidden md:inline-flex btn-primary text-[13px] font-semibold uppercase tracking-wide px-5 py-2.5 rounded-full">Start a project</a>
+    <button id="menuBtn" class="menu-btn md:hidden w-9 h-9 flex items-center justify-center" aria-label="Open menu" aria-expanded="false">
+      <span class="menu-bar menu-bar-1"></span>
+      <span class="menu-bar menu-bar-2"></span>
+    </button>
+  </div>
+  <div id="mobileMenu" hidden class="md:hidden border-t border-black/10 bg-white px-5 py-4 gap-4 text-base font-medium">
+    <a href="#work">Work</a>
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero-pin-wrap">
+  <section class="hero-shell pt-14 md:pt-20 pb-8">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+      <source src="brand_assets/Tinsklab_bgvid.mp4" type="video/mp4">
+    </video>
+    <div class="hero-vignette" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="hero-content relative z-10 max-w-[1320px] mx-auto px-5 md:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <h1 class="display display-hero text-white">TINSK<br>LABS</h1>
+        <div class="max-w-[300px] text-right ml-auto">
+          <div class="rotator" id="heroRotator" aria-live="polite">
+            <p class="rotator-line is-active font-semibold uppercase text-[18px] md:text-[22px] leading-[1.2] tracking-tight text-white">AI systems built to free up your team's capacity.</p>
+            <p class="rotator-line font-semibold uppercase text-[18px] md:text-[22px] leading-[1.2] tracking-tight text-white">Agents that keep operations running around the clock.</p>
+            <p class="rotator-line font-semibold uppercase text-[18px] md:text-[22px] leading-[1.2] tracking-tight text-white">Fewer bottlenecks. Smoother operations. Better outcomes.</p>
+            <p class="rotator-line font-semibold uppercase text-[18px] md:text-[22px] leading-[1.2] tracking-tight text-white">Engineered to deliver measurable returns, quickly.</p>
+          </div>
+          <p class="mt-3 text-[12px] text-white/50"><span class="rotator-count" id="heroRotatorCount">01</span> / 04</p>
+        </div>
+      </div>
+      <div class="mt-2 flex items-center justify-between text-[13px] uppercase tracking-wide font-semibold text-white/50">
+        <span>Helping businesses operate more efficiently through applied AI.</span>
+        <button type="button" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})" class="hidden sm:inline-flex items-center gap-2 cursor-pointer uppercase text-[15px]">Scroll down <span class="inline-block scroll-arrow">&darr;</span></button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 mt-8 pb-24">
+        <div class="img-tint rounded-2xl overflow-hidden aspect-[4/5] card-floating relative ring-1 ring-white/10">
+          <video src="brand_assets/SUPPORT.mp4" autoplay muted loop playsinline preload="auto" aria-label="Customer support agent interface" class="w-full h-full object-cover"></video>
+          <span class="absolute top-4 left-4 tag-chip bg-white/90">Live in production</span>
+        </div>
+        <div class="img-tint rounded-2xl overflow-hidden aspect-[4/5] card-floating relative ring-1 ring-white/10 sm:mt-8">
+          <video src="brand_assets/Real-Estate2.mp4" autoplay muted loop playsinline preload="auto" aria-label="Automated real estate workflow demo" class="w-full h-full object-cover"></video>
+        </div>
+        <div class="img-tint rounded-2xl overflow-hidden aspect-[4/5] card-floating relative ring-1 ring-white/10">
+          <video src="brand_assets/Customer support Vid.mp4" autoplay muted loop playsinline preload="auto" aria-label="Sales and customer support agent demo" class="w-full h-full object-cover"></video>
+          <span class="absolute top-4 left-4 tag-chip bg-[var(--accent)] text-white border-none">Client favorite</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="hero-spacer" aria-hidden="true"></div>
+  </div>
+
+  <!-- ============ ABOUT / INTRO ============ -->
+  <section id="about" class="overlap-slab bg-[var(--paper)] max-w-none px-0 pt-16 md:pt-24 pb-16 md:pb-24 border-t border-black/10">
+    <div class="max-w-[1320px] mx-auto px-5 md:px-8">
+    <div class="reveal-stagger grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
+      <div>
+        <p class="text-[13px] font-semibold uppercase tracking-wide text-[var(--accent)] mb-3">About</p>
+        <h2 class="display text-[36px] md:text-[48px] leading-[1.05]">AI-native<br>agency</h2>
+      </div>
+      <div>
+        <p class="text-[20px] md:text-[24px] font-medium leading-[1.4] uppercase tracking-tight">TINSK Labs is an AI agency that helps businesses operate more efficiently through AI systems built to perform.</p>
+        <p class="mt-5 text-[15px] leading-[1.7] text-[var(--ink-4)] max-w-[520px]">We design, build, and deploy production-grade AI agents that handle repetitive, high-volume work so your team can focus on higher-value priorities, from initial workflow audit to a live system in production. No decks, no theory, just working software that delivers measurable results.</p>
+        <a href="#work" class="mt-8 inline-flex items-center gap-2 btn-primary text-[13px] font-semibold uppercase tracking-wide px-6 py-3 rounded-full">See our work</a>
+      </div>
+    </div>
+
+    <div class="reveal-stagger grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 md:mt-24 pt-10 border-t border-black/10">
+      <div>
+        <p class="display text-[44px] md:text-[64px]"><span class="stat-num" data-target="40">0</span><span class="text-[var(--accent)]">+</span></p>
+        <p class="mt-2 text-[13px] text-[var(--ink-4)] leading-snug">AI agents shipped to production</p>
+      </div>
+      <div>
+        <p class="display text-[44px] md:text-[64px]"><span class="stat-num" data-target="30">0</span><span class="text-[var(--accent)]">+</span></p>
+        <p class="mt-2 text-[13px] text-[var(--ink-4)] leading-snug">Businesses operating more efficiently with AI</p>
+      </div>
+      <div>
+        <p class="display text-[44px] md:text-[64px]"><span class="stat-num" data-target="5">0</span><span class="text-[var(--accent)]">+</span></p>
+        <p class="mt-2 text-[13px] text-[var(--ink-4)] leading-snug">Years building applied AI systems</p>
+      </div>
+      <div>
+        <p class="display text-[44px] md:text-[64px]"><span class="stat-num" data-target="24">0</span><span class="text-[var(--accent)]">/7</span></p>
+        <p class="mt-2 text-[13px] text-[var(--ink-4)] leading-snug">Uptime monitoring on live agents</p>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- ============ CASE STUDIES / WORK ============ -->
+  <section id="work" class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-14">
+      <div>
+        <h2 class="display display-section">Case<br>studies</h2>
+      </div>
+      <div class="flex items-center gap-6">
+        <p class="max-w-[260px] text-[14px] text-[var(--ink-4)] leading-relaxed">Real agents, built for real businesses seeking measurable operational improvement: strategy, build, and support included.</p>
+        <a href="#contact" class="shrink-0 btn-primary text-[13px] font-semibold uppercase tracking-wide px-6 py-3 rounded-full whitespace-nowrap">Start a project</a>
+      </div>
+    </div>
+
+    <div class="reveal-stagger grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-12">
+      <article class="group">
+        <div class="flex items-baseline justify-between mb-3">
+          <h3 class="font-bold uppercase text-[18px] tracking-tight">ATRADER</h3>
+          <span class="text-[12px] uppercase tracking-wide text-[var(--ink-4)]">Support Agent</span>
+        </div>
+        <div class="img-tint rounded-xl overflow-hidden aspect-[4/3] relative">
+          <video src="brand_assets/AT2.mp4" autoplay muted loop playsinline preload="auto" aria-label="ATRADER AI support agent case study" class="w-full h-full object-cover"></video>
+          <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <a href="https://myatraderapp.com/" target="_blank" rel="noopener" class="btn-primary text-[13px] font-semibold uppercase tracking-wide px-6 py-3 rounded-full whitespace-nowrap">Visit site</a>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-3 text-[13px] text-[var(--ink-4)]">
+          <span>24/7 customer support automation</span>
+          <span>2025</span>
+        </div>
+      </article>
+
+      <article class="group">
+        <div class="flex items-baseline justify-between mb-3">
+          <h3 class="font-bold uppercase text-[18px] tracking-tight">U Trade</h3>
+          <span class="text-[12px] uppercase tracking-wide text-[var(--ink-4)]">Customer Care Agent</span>
+        </div>
+        <div class="img-tint rounded-xl overflow-hidden aspect-[4/3]">
+          <video src="brand_assets/Customer support Vid.mp4" autoplay muted loop playsinline preload="auto" aria-label="U Trade WhatsApp sales and customer support agent case study" class="w-full h-full object-cover"></video>
+        </div>
+        <div class="flex items-center justify-between mt-3 text-[13px] text-[var(--ink-4)]">
+          <span>WhatsApp Sales + Customer Support Agent</span>
+          <span>2024</span>
+        </div>
+      </article>
+
+      <article class="group">
+        <div class="flex items-baseline justify-between mb-3">
+          <h3 class="font-bold uppercase text-[18px] tracking-tight">Leventis Motors</h3>
+          <span class="text-[12px] uppercase tracking-wide text-[var(--ink-4)]">Forecasting Agent</span>
+        </div>
+        <div class="img-tint rounded-xl overflow-hidden aspect-[4/3]">
+          <video src="brand_assets/Forecasting agent.mp4" autoplay muted loop playsinline preload="auto" aria-label="Forge Manufacturing inventory forecasting agent case study" class="w-full h-full object-cover"></video>
+        </div>
+        <div class="flex items-center justify-between mt-3 text-[13px] text-[var(--ink-4)]">
+          <span>Inventory &amp; demand forecasting</span>
+          <span>2024</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="mt-12 flex justify-center">
+      <button class="btn-primary text-[13px] font-semibold uppercase tracking-wide px-8 py-3.5 rounded-full">Load more</button>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES ============ -->
+  <section id="services" class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-14">
+      <h2 class="display display-section">Our<br>services</h2>
+      <p class="max-w-[320px] text-[14px] text-[var(--ink-4)] leading-relaxed">Strategy, design, and engineering, delivered as one team to improve how your business operates.</p>
+    </div>
+
+    <div>
+      <details class="accordion-row py-6" open>
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-bold uppercase text-[20px] md:text-[28px] tracking-tight">AI Agent Development</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 md:gap-10">
+          <div class="img-tint rounded-xl overflow-hidden aspect-[4/3]">
+            <video src="brand_assets/Coding.mp4" autoplay muted loop playsinline preload="auto" aria-label="AI agent development illustration" class="w-full h-full object-cover"></video>
+          </div>
+          <div>
+            <p class="text-[15px] leading-[1.7] text-[var(--ink-4)] max-w-[560px]">We design and build custom AI agents trained on your business (support, sales, operations, and back-office) to handle repetitive, high-volume work, integrated directly into the tools you already use.</p>
+            <div class="flex flex-wrap gap-2 mt-5">
+              <span class="tag-chip">Custom-trained</span>
+              <span class="tag-chip">Production-ready</span>
+              <span class="tag-chip">Human-in-the-loop</span>
+              <span class="tag-chip">24/7 uptime</span>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-bold uppercase text-[20px] md:text-[28px] tracking-tight">Workflow Automation</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-5 text-[15px] leading-[1.7] text-[var(--ink-4)] max-w-[560px]">We map your manual processes and automate them end to end, from lead intake to reporting, improving speed and consistency without removing your team's judgment.</p>
+      </details>
+
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-bold uppercase text-[20px] md:text-[28px] tracking-tight">AI Consulting &amp; Strategy</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-5 text-[15px] leading-[1.7] text-[var(--ink-4)] max-w-[560px]">Not sure where AI can add value? We audit your operations, identify the areas with the greatest inefficiency, and deliver a realistic implementation roadmap.</p>
+      </details>
+
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-bold uppercase text-[20px] md:text-[28px] tracking-tight">System Integrations</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-5 text-[15px] leading-[1.7] text-[var(--ink-4)] max-w-[560px]">CRM, helpdesk, ERP, spreadsheets: we connect your AI systems to the software that already runs your business, cleanly and securely, ensuring accurate and consistent data across every system without manual re-entry.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ TRUSTED BY ============ -->
+  <section class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-20 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+      <h2 class="display display-section text-[32px] md:text-[52px]">Trusted by</h2>
+      <p class="max-w-[300px] text-[14px] text-[var(--ink-4)] leading-relaxed">A sample of teams operating more efficiently with TINSK-built agents in daily production use.</p>
+    </div>
+    <div class="reveal-stagger grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="card-surface rounded-xl h-20 flex items-center justify-center p-3"><img src="brand_assets/Leventis.png" alt="Leventis Motors logo" class="max-h-full max-w-full object-contain"></div>
+      <div class="card-surface rounded-xl h-20 flex items-center justify-center p-3"><img src="brand_assets/AT.png" alt="ATRADER logo" class="max-h-full max-w-full object-contain"></div>
+      <div class="card-surface rounded-xl h-20 flex items-center justify-center p-3"><img src="brand_assets/U Trade.jpeg" alt="U Trade logo" class="max-h-full max-w-full object-contain rounded-md"></div>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-14">
+      <h2 class="display display-section">Flexible<br>plans</h2>
+      <p class="max-w-[300px] text-[14px] text-[var(--ink-4)] leading-relaxed">Start with a single agent, or scale to a full automation program designed to deliver returns quickly.</p>
+    </div>
+    <div class="reveal-stagger grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="card-surface rounded-2xl p-8 md:p-10">
+        <p class="font-bold uppercase tracking-wide text-[14px] text-[var(--ink-4)]">Starter Plan</p>
+        <p class="display text-[32px] md:text-[38px] mt-3">Custom<span class="block text-[16px] font-medium normal-case tracking-normal text-[var(--ink-4)] mt-1">Priced to fit your workflow</span></p>
+        <p class="mt-3 text-[14px] text-[var(--ink-4)] leading-relaxed">One production agent covering a single core workflow, built and monitored for reliable, hands-off performance.</p>
+        <ul class="mt-6 space-y-3 text-[14px]">
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> One custom AI agent</li>
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Core tool integration</li>
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Monthly performance review</li>
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Email support</li>
+        </ul>
+        <a href="#contact" class="mt-8 inline-flex w-full justify-center btn-primary text-[13px] font-semibold uppercase tracking-wide px-6 py-3.5 rounded-full">Get started</a>
+      </div>
+      <div class="rounded-2xl p-8 md:p-10 relative overflow-hidden noise" style="background:var(--ink); color:#fff;">
+        <p class="font-bold uppercase tracking-wide text-[14px] text-white/60">Professional Plan</p>
+        <p class="display text-[32px] md:text-[38px] mt-3">Custom<span class="block text-[16px] font-medium normal-case tracking-normal text-white/60 mt-1">Scoped to your program</span></p>
+        <p class="mt-3 text-[14px] text-white/70 leading-relaxed">A connected system of agents managing your core workflows end to end, with priority support to identify and resolve issues before they affect operations.</p>
+        <ul class="mt-6 space-y-3 text-[14px]">
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Multiple AI agents</li>
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Full workflow automation</li>
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Custom integrations</li>
+          <li class="flex items-center gap-3"><span class="text-[var(--accent)] font-bold">&#10003;</span> Priority 24/7 support</li>
+        </ul>
+        <a href="#contact" class="mt-8 inline-flex w-full justify-center btn-accent text-[13px] font-semibold uppercase tracking-wide px-6 py-3.5 rounded-full">Get started</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-14">
+      <h2 class="display display-section">What clients<br>say</h2>
+      <div class="text-right">
+        <p class="display text-[36px] md:text-[44px]">4.9/5</p>
+        <p class="text-[13px] text-[var(--ink-4)]">From 30+ client reviews</p>
+      </div>
+    </div>
+    <div class="card-surface rounded-2xl p-8 md:p-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
+      <div class="rounded-xl w-20 h-20 shrink-0 flex items-center justify-center" style="background:var(--ink);">
+        <span class="text-white font-bold text-[20px] tracking-wide" aria-hidden="true">TA</span>
+        <span class="sr-only">Portrait of Tosin A.</span>
+      </div>
+      <div>
+        <p class="text-[18px] md:text-[22px] leading-[1.4] font-medium">&ldquo;TINSK Labs gave our support team back over 20 hours a week. The agent they built handles tier-one tickets end to end, it just works.&rdquo;</p>
+        <p class="mt-4 text-[14px] font-bold uppercase tracking-wide">Tosin A.</p>
+        <p class="text-[13px] text-[var(--ink-4)]">Head of Operations, ATRADER</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-14">
+      <h2 class="display display-section">Questions &amp;<br>answers</h2>
+      <p class="max-w-[300px] text-[14px] text-[var(--ink-4)] leading-relaxed">Everything you need to know before starting a project with TINSK Labs.</p>
+    </div>
+    <div>
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-semibold text-[16px] md:text-[18px]">What kinds of businesses do you work with?</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-4 text-[14px] leading-[1.7] text-[var(--ink-4)] max-w-[640px]">Everything from early-stage startups to established mid-market and enterprise teams: retail, logistics, healthcare, and manufacturing among them.</p>
+      </details>
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-semibold text-[16px] md:text-[18px]">How long does a typical build take?</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-4 text-[14px] leading-[1.7] text-[var(--ink-4)] max-w-[640px]">Most single-agent projects go from kickoff to production in 3&ndash;6 weeks. Multi-agent programs are scoped after the initial workflow audit.</p>
+      </details>
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-semibold text-[16px] md:text-[18px]">Do you offer ongoing support after launch?</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-4 text-[14px] leading-[1.7] text-[var(--ink-4)] max-w-[640px]">Yes, every plan includes monitoring, and Professional plans include priority 24/7 support and iteration as your workflows evolve.</p>
+      </details>
+      <details class="accordion-row py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <span class="font-semibold text-[16px] md:text-[18px]">How do we get started?</span>
+          <span class="chev text-2xl font-light shrink-0">+</span>
+        </summary>
+        <p class="mt-4 text-[14px] leading-[1.7] text-[var(--ink-4)] max-w-[640px]">Send us a message below with a bit about your business. We'll schedule a short discovery call to map your highest-leverage use case.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="reveal max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 border-t border-black/10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 md:mb-16">
+      <h2 class="display display-section">Start a<br>project</h2>
+      <p class="max-w-[300px] text-[14px] text-[var(--ink-4)] leading-relaxed">Tell us about your business. We'll follow up within one business day.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-12">
+      <div class="space-y-8">
+        <div>
+          <p class="font-bold uppercase text-[16px]">tinsklabs@gmail.com</p>
+          <p class="text-[13px] text-[var(--ink-4)] mt-1">For project inquiries and general questions</p>
+        </div>
+        <div>
+          <p class="font-bold uppercase text-[16px]">+1 (415) 555-0189</p>
+          <p class="text-[13px] text-[var(--ink-4)] mt-1">Available Monday to Friday, 9am&ndash;6pm (PST)</p>
+        </div>
+        <div>
+          <p class="font-bold uppercase text-[16px]">Address</p>
+          <p class="text-[13px] text-[var(--ink-4)] mt-1">Remote-first team, working with clients worldwide</p>
+        </div>
+      </div>
+
+      <form id="contactForm" class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
+        <div>
+          <label class="block font-bold uppercase text-[13px] tracking-wide mb-3" for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" class="w-full py-2 text-[15px] focus:outline-none" required>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-[13px] tracking-wide mb-3" for="email">Email address</label>
+          <input id="email" name="email" type="email" placeholder="Your email address" class="w-full py-2 text-[15px] focus:outline-none" required>
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-[13px] tracking-wide mb-3" for="phone">Phone number</label>
+          <input id="phone" name="phone" type="tel" placeholder="Your phone number" class="w-full py-2 text-[15px] focus:outline-none">
+        </div>
+        <div>
+          <label class="block font-bold uppercase text-[13px] tracking-wide mb-3" for="type">Project type</label>
+          <select id="type" name="projectType" class="w-full py-2 text-[15px] focus:outline-none">
+            <option>Select&hellip;</option>
+            <option>AI agent development</option>
+            <option>Workflow automation</option>
+            <option>AI consulting</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block font-bold uppercase text-[13px] tracking-wide mb-3" for="message">Message</label>
+          <textarea id="message" name="message" rows="3" placeholder="Write your project details/message" class="w-full py-2 text-[15px] focus:outline-none resize-none" required></textarea>
+        </div>
+        <div class="hidden" aria-hidden="true">
+          <label for="company">Company</label>
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="sm:col-span-2">
+          <p id="contactFormStatus" class="hidden text-[13px] mb-4" role="status"></p>
+          <button type="submit" class="w-full btn-primary text-[14px] font-semibold uppercase tracking-wide py-4 rounded-lg">Send message</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="text-white noise relative overflow-hidden" style="background:var(--ink);">
+  <div class="max-w-[1320px] mx-auto px-5 md:px-8 pt-16 md:pt-20 pb-8">
+    <div class="flex items-center gap-3">
+      <span class="logo-x"></span>
+      <span class="display text-[44px] md:text-[88px]">TINSK<span class="text-[16px] md:text-[28px] align-top font-semibold">&trade;</span> LABS</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10 pt-10 border-t border-white/15">
+      <div>
+        <p class="text-[14px] text-white/70 leading-relaxed max-w-[380px]">TINSK Labs is an AI agency focused on building agents that make businesses more efficient and cost-effective, for small teams and large operations alike.</p>
+      </div>
+      <div>
+        <p class="text-[14px] text-white/70 leading-relaxed">Insights, project updates, and applied-AI notes, delivered occasionally, never spam.</p>
+        <form id="newsletterForm" class="mt-4 flex flex-col sm:flex-row gap-3">
+          <input id="newsletterEmail" name="email" type="email" placeholder="Email address" class="flex-1 bg-white text-black rounded-lg px-4 py-3 text-[14px] focus:outline-none border-none" required>
+          <input name="company" type="text" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+          <button type="submit" class="btn-accent rounded-lg px-6 py-3 text-[14px] font-semibold uppercase tracking-wide whitespace-nowrap">Sign up</button>
+        </form>
+        <p id="newsletterFormStatus" class="hidden text-[13px] mt-3" role="status"></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 mt-14 text-[14px]">
+      <div class="space-y-3">
+        <p class="font-bold uppercase text-white/50 text-[12px] tracking-wide mb-2">Explore</p>
+        <a href="#top" class="block hover:text-[var(--accent)]">Home</a>
+        <a href="#work" class="block hover:text-[var(--accent)]">Work</a>
+        <a href="#about" class="block hover:text-[var(--accent)]">About</a>
+        <a href="#contact" class="block hover:text-[var(--accent)]">Contact</a>
+      </div>
+      <div class="space-y-3">
+        <p class="font-bold uppercase text-white/50 text-[12px] tracking-wide mb-2">Follow</p>
+        <a href="#" class="block hover:text-[var(--accent)]">Twitter / X</a>
+        <a href="#" class="block hover:text-[var(--accent)]">Instagram</a>
+      </div>
+      <div class="space-y-3 col-span-2 sm:col-span-1 sm:text-right">
+        <p class="font-bold uppercase text-white/50 text-[12px] tracking-wide mb-2">Contact</p>
+        <p class="text-white/70">tinsklabs@gmail.com</p>
+        <p class="text-white/70">+1 (415) 555-0189</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-14 pt-6 border-t border-white/15 text-[12px] text-white/50">
+      <p>&copy;2026 TINSK Labs. All rights reserved.</p>
+      <p>Built by TINSK Labs.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let mobileMenuOpen = false;
+
+  const openMobileMenu = () => {
+    mobileMenu.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => mobileMenu.classList.add('is-open')));
+    menuBtn.classList.add('is-active');
+    menuBtn.setAttribute('aria-expanded', 'true');
+    mobileMenuOpen = true;
+  };
+  const closeMobileMenu = () => {
+    if (!mobileMenuOpen) return;
+    mobileMenu.classList.remove('is-open');
+    menuBtn.classList.remove('is-active');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    mobileMenuOpen = false;
+    const onEnd = (e) => {
+      if (e.target !== mobileMenu || e.propertyName !== 'max-height') return;
+      if (!mobileMenuOpen) mobileMenu.hidden = true;
+      mobileMenu.removeEventListener('transitionend', onEnd);
+    };
+    mobileMenu.addEventListener('transitionend', onEnd);
+  };
+
+  menuBtn.addEventListener('click', () => (mobileMenuOpen ? closeMobileMenu() : openMobileMenu()));
+  document.querySelectorAll('#mobileMenu a').forEach((link) => {
+    link.addEventListener('click', closeMobileMenu);
+  });
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) {
+    const lines = document.querySelectorAll('#heroRotator .rotator-line');
+    const countEl = document.getElementById('heroRotatorCount');
+    let active = 0;
+    if (lines.length > 1) {
+      setInterval(() => {
+        lines[active].classList.remove('is-active');
+        active = (active + 1) % lines.length;
+        lines[active].classList.add('is-active');
+        if (countEl) countEl.textContent = String(active + 1).padStart(2, '0');
+      }, 4000);
+    }
+  }
+
+  /* ---- Hero: video background parallax ---- */
+  const heroShell = document.querySelector('.hero-shell');
+  const heroVideo = document.querySelector('.hero-video');
+  const heroContent = document.querySelector('.hero-content');
+
+  if (heroVideo) {
+    heroVideo.play?.().catch(() => {});
+    if (reduceMotion) heroVideo.pause();
+  }
+
+  if (heroShell && !reduceMotion) {
+    let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+    window.addEventListener('mousemove', (e) => {
+      const r = heroShell.getBoundingClientRect();
+      mouseX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      mouseY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    });
+
+    let scrollFrac = 0;
+    const updateScrollFrac = () => {
+      const r = heroShell.getBoundingClientRect();
+      const total = r.height || 1;
+      scrollFrac = Math.min(Math.max(-r.top / total, 0), 1);
+    };
+    window.addEventListener('scroll', updateScrollFrac, { passive: true });
+    updateScrollFrac();
+
+    const tick = (t) => {
+      curX += (mouseX - curX) * 0.04;
+      curY += (mouseY - curY) * 0.04;
+
+      if (heroVideo) {
+        const driftX = curX * 14;
+        const driftY = curY * 10 - scrollFrac * 50;
+        const scale = 1.06 + scrollFrac * 0.08;
+        heroVideo.style.transform = `translate3d(${driftX}px, ${driftY}px, 0) scale(${scale})`;
+      }
+
+      if (heroContent) {
+        heroContent.style.transform = `translate3d(0, ${scrollFrac * 40}px, 0)`;
+        heroContent.style.opacity = String(1 - scrollFrac * 0.9);
+      }
+
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  /* ---- Count-up numbers (About stats) ---- */
+  const statEls = document.querySelectorAll('.stat-num');
+  if (statEls.length) {
+    const animateCount = (el) => {
+      const target = parseInt(el.dataset.target, 10) || 0;
+      if (reduceMotion) { el.textContent = String(target); return; }
+      const duration = 1400;
+      const start = performance.now();
+      const easeOutExpo = (x) => (x === 1 ? 1 : 1 - Math.pow(2, -10 * x));
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const value = Math.round(target * easeOutExpo(progress));
+        el.textContent = String(value);
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    if (!('IntersectionObserver' in window)) {
+      statEls.forEach((el) => animateCount(el));
+    } else {
+      const statIO = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCount(entry.target);
+            statIO.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.6 });
+      statEls.forEach((el) => statIO.observe(el));
+    }
+  }
+
+  /* ---- Scroll-down reveal animations ---- */
+  const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+  if (revealEls.length) {
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      revealEls.forEach((el) => el.classList.add('is-visible'));
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+      revealEls.forEach((el) => io.observe(el));
+    }
+  }
+
+  /* ---- Start a project form submission ---- */
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    const statusEl = document.getElementById('contactFormStatus');
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const submitBtnDefaultText = submitBtn ? submitBtn.textContent : '';
+
+    const setStatus = (text, kind) => {
+      if (!statusEl) return;
+      statusEl.textContent = text;
+      statusEl.classList.remove('hidden', 'text-red-600', 'text-green-700');
+      statusEl.classList.add(kind === 'error' ? 'text-red-600' : 'text-green-700');
+    };
+
+    contactForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(contactForm);
+      const payload = Object.fromEntries(formData.entries());
+
+      if (!payload.name || !payload.email || !payload.message) {
+        setStatus('Please fill in your name, email, and message.', 'error');
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+      }
+      setStatus('Sending your message…');
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.ok) {
+          setStatus("Thanks — we'll follow up within one business day.");
+          contactForm.reset();
+        } else {
+          setStatus(data.error || 'Something went wrong. Please try again.', 'error');
+        }
+      } catch (err) {
+        setStatus('Network error — please try again.', 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitBtnDefaultText;
+        }
+      }
+    });
+  }
+
+  /* ---- Newsletter signup form submission ---- */
+  const newsletterForm = document.getElementById('newsletterForm');
+  if (newsletterForm) {
+    const nlStatusEl = document.getElementById('newsletterFormStatus');
+    const nlSubmitBtn = newsletterForm.querySelector('button[type="submit"]');
+    const nlSubmitBtnDefaultText = nlSubmitBtn ? nlSubmitBtn.textContent : '';
+
+    const setNlStatus = (text, kind) => {
+      if (!nlStatusEl) return;
+      nlStatusEl.textContent = text;
+      nlStatusEl.classList.remove('hidden', 'text-red-400', 'text-white/70');
+      nlStatusEl.classList.add(kind === 'error' ? 'text-red-400' : 'text-white/70');
+    };
+
+    newsletterForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(newsletterForm);
+      const payload = Object.fromEntries(formData.entries());
+
+      if (!payload.email) {
+        setNlStatus('Please enter your email address.', 'error');
+        return;
+      }
+
+      if (nlSubmitBtn) {
+        nlSubmitBtn.disabled = true;
+        nlSubmitBtn.textContent = 'Signing up…';
+      }
+      setNlStatus('Signing up…');
+
+      try {
+        const res = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.ok) {
+          setNlStatus("You're subscribed — check your inbox for confirmation.");
+          newsletterForm.reset();
+        } else {
+          setNlStatus(data.error || 'Something went wrong. Please try again.', 'error');
+        }
+      } catch (err) {
+        setNlStatus('Network error — please try again.', 'error');
+      } finally {
+        if (nlSubmitBtn) {
+          nlSubmitBtn.disabled = false;
+          nlSubmitBtn.textContent = nlSubmitBtnDefaultText;
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>
