@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { sendContactEmail, sendNewsletterOwnerNotification, sendNewsletterConfirmation } from './mailer.mjs';
 import { appendContactRow, appendNewsletterRow } from './sheets.mjs';
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const port = process.env.PORT || 3000;
 
 const types = {
