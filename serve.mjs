@@ -155,7 +155,16 @@ http.createServer((req, res) => {
     return;
   }
 
-  const filePath = path.join(root, decodeURIComponent(urlPath));
+  const decodedPath = decodeURIComponent(urlPath);
+  const isAllowed = decodedPath === '/index.html' || decodedPath.startsWith('/brand_assets/');
+
+  if (!isAllowed) {
+    res.writeHead(404);
+    res.end('Not found');
+    return;
+  }
+
+  const filePath = path.join(root, decodedPath);
 
   if (!filePath.startsWith(root)) {
     res.writeHead(403);
