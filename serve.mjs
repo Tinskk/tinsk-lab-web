@@ -6,7 +6,7 @@ import { sendContactEmail, sendNewsletterOwnerNotification, sendNewsletterConfir
 import { appendContactRow, appendNewsletterRow } from './sheets.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const types = {
   '.html': 'text/html',
